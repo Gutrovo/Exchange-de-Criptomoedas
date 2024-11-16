@@ -196,7 +196,7 @@ public class TelaInicial extends javax.swing.JFrame {
     }//GEN-LAST:event_btExtratoActionPerformed
 
     private void btAtualizarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btAtualizarActionPerformed
-       try {
+     try {
         Connection conn = new Conexao().getConnection();
         BancoDAO dao = new BancoDAO(conn);
         dao.atualizarCotacoes(); // Atualiza as cotações no banco
@@ -206,6 +206,7 @@ public class TelaInicial extends javax.swing.JFrame {
         e.printStackTrace();
         javax.swing.JOptionPane.showMessageDialog(this, "Erro ao atualizar cotações: " + e.getMessage());
     }
+
 
     }//GEN-LAST:event_btAtualizarActionPerformed
 

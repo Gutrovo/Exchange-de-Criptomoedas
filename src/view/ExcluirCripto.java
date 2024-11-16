@@ -58,7 +58,7 @@ public class ExcluirCripto extends javax.swing.JFrame {
         btExcluir = new javax.swing.JButton();
         lblCadastroCriptom = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         lblNomeCripto.setText("Nome:");
 

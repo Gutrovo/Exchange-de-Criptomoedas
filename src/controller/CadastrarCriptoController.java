@@ -16,6 +16,7 @@ public class CadastrarCriptoController {
         this.view = view;
     }
 
+  
     public void salvarCripto() {
         String nome = view.getTxtNomeCripto().getText();
         double cotacao = Double.parseDouble(view.getTxtCotacaoCripto().getText());
@@ -28,13 +29,16 @@ public class CadastrarCriptoController {
         try {
             Connection conn = conexao.getConnection();
             BancoDAO dao = new BancoDAO(conn);
+
+            // Inserir a moeda na tabela cotacao e na tabela Investidor
             dao.inserirMoeda(moeda);
-            JOptionPane.showMessageDialog(view, "Moeda cadastrada");
+            JOptionPane.showMessageDialog(view, "Moeda cadastrada com sucesso");
 
         } catch (SQLException e) {
-            JOptionPane.showMessageDialog(view, "Moeda nao cadastrada");
+            JOptionPane.showMessageDialog(view, "Erro ao cadastrar a moeda: " + e.getMessage());
         }
     }
+
 
     public void adicionarNovaColunaMoeda() {
     String nomeColuna = view.getTxtNomeCripto().getText().trim();

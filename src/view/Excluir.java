@@ -91,7 +91,7 @@ public class Excluir extends javax.swing.JFrame {
         lblSenha = new javax.swing.JLabel();
         txtdisplay2 = new javax.swing.JTextField();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         LblNomel1.setText("Nome:");
 

@@ -128,7 +128,7 @@ public class NovaMoeda extends javax.swing.JFrame {
         txtTaxaVenda = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
         jLabel1.setText("Nome da nova moeda");
 
@@ -225,7 +225,7 @@ public class NovaMoeda extends javax.swing.JFrame {
     }//GEN-LAST:event_txtNomeCriptoActionPerformed
 
     private void BtcadastrarNVActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtcadastrarNVActionPerformed
-        control.adicionarNovaColunaMoeda();
+        control.salvarCripto(); 
     }//GEN-LAST:event_BtcadastrarNVActionPerformed
 
     /**

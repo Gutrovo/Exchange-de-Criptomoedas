@@ -52,17 +52,22 @@ public class BancoDAO {
         statement.close();
     }
 
-    public void inserirMoeda(OutrasMoedas moeda) throws SQLException {
-        String sql = "insert into moedas ( \"Nome\", "
-                + "\"Cotacao\", \"Taxa_compra\", \"Taxa_venda\") values('"
-                + moeda.getNome() + "', '"
-                + moeda.getCotacao() + "', '"
-                + moeda.getTaxaCompra() + "', '"
-                + moeda.getTaxaVenda() + "')";
-        PreparedStatement statement = conn.prepareStatement(sql);
+   public void inserirMoeda(OutrasMoedas moeda) throws SQLException {
+    // Inserir a nova moeda na tabela cotacao
+    String sqlCotacao = "INSERT INTO cotacao (moedas, cotacao) VALUES (?, ?)";
+    try (PreparedStatement statement = conn.prepareStatement(sqlCotacao)) {
+        statement.setString(1, moeda.getNome());
+        statement.setDouble(2, moeda.getCotacao());
         statement.execute();
-        conn.close();
     }
+
+    // Adicionar a nova coluna na tabela "Investidor"
+    String sqlInvestidor = "ALTER TABLE \"Investidor\" ADD COLUMN \"" + moeda.getNome() + "\" DOUBLE PRECISION";
+    try (PreparedStatement statement = conn.prepareStatement(sqlInvestidor)) {
+        statement.executeUpdate();
+        System.out.println("Coluna " + moeda.getNome() + " adicionada na tabela Investidor");
+    }
+}
 
     public void adicionarColuna(String nomeColuna) throws SQLException {
         // Define a coluna como VARCHAR(50)
@@ -150,12 +155,10 @@ public class BancoDAO {
         return transacoes;
     }
     
-    public void atualizarCotacoes() throws SQLException {
-    // Consulta para obter os valores atuais das criptomoedas
-    String sqlSelect = "SELECT cpf, bitcoin, ethereum, ripple FROM \"Investidor\"";
-    
-    // Comando para atualizar as criptomoedas no banco
-    String sqlUpdate = "UPDATE \"Investidor\" SET bitcoin = ?, ethereum = ?, ripple = ? WHERE cpf = ?";
+   public void atualizarCotacoes() throws SQLException {
+    // Consulta para obter todas as moedas e suas cotações da tabela 'cotacao'
+    String sqlSelect = "SELECT moedas, cotacao FROM cotacao";
+    String sqlUpdate = "UPDATE cotacao SET cotacao = ? WHERE moedas = ?";
 
     try (PreparedStatement selectStmt = conn.prepareStatement(sqlSelect);
          PreparedStatement updateStmt = conn.prepareStatement(sqlUpdate)) {
@@ -164,34 +167,40 @@ public class BancoDAO {
         ResultSet rs = selectStmt.executeQuery();
 
         while (rs.next()) {
-            String cpf = rs.getString("cpf"); // CPF do investidor
-            double bitcoin = rs.getDouble("bitcoin");
-            double ethereum = rs.getDouble("ethereum");
-            double ripple = rs.getDouble("ripple");
+            String moeda = rs.getString("moedas");  // Nome da moeda
+            double cotacaoAtual = rs.getDouble("cotacao");
 
-            // Calcula novas cotações com variação aleatória
-            bitcoin = calcularNovaCotacao(bitcoin);
-            ethereum = calcularNovaCotacao(ethereum);
-            ripple = calcularNovaCotacao(ripple);
+            // Calcula a nova cotação com variação aleatória
+            double novaCotacao = calcularNovaCotacao(cotacaoAtual);
 
             // Define os valores atualizados no comando de atualização
-            updateStmt.setDouble(1, bitcoin);
-            updateStmt.setDouble(2, ethereum);
-            updateStmt.setDouble(3, ripple);
-            updateStmt.setString(4, cpf);
+            updateStmt.setDouble(1, novaCotacao);
+            updateStmt.setString(2, moeda);
 
-            // Adiciona o comando ao lote
-            updateStmt.addBatch();
+            // Executa a atualização da cotação
+            updateStmt.executeUpdate();
+            System.out.println("Cotação da " + moeda + " foi atualizada para: " + novaCotacao);
         }
-
-        // Executa todas as atualizações em lote
-        updateStmt.executeBatch();
     }
 }
 
-// Método auxiliar para calcular a nova cotação
+// Método auxiliar para calcular a nova cotação com variação de -5% a +5%
 private double calcularNovaCotacao(double valorAtual) {
-    double variacao = (Math.random() * 0.1) - 0.05; // Gera variação entre -5% e +5%
-    return valorAtual + (valorAtual * variacao);
+    // Gera uma variação aleatória entre -0.05 (-5%) e +0.05 (+5%)
+    double variacaoPercentual = (Math.random() * 0.1) - 0.05;  // Gera um valor entre -0.05 e 0.05
+    return valorAtual * (1 + variacaoPercentual);  // Aplica a variação à cotação atual
 }
+
+public void inserirNovaMoedaNaCotacao(OutrasMoedas moeda) throws SQLException {
+    String sql = "INSERT INTO cotacao (moedas, cotacao) VALUES (?, ?)";
+
+    try (PreparedStatement statement = conn.prepareStatement(sql)) {
+        statement.setString(1, moeda.getNome());  // Nome da moeda
+        statement.setDouble(2, moeda.getCotacao());  // Cotação da moeda
+        statement.executeUpdate();  // Executa o comando de inserção no banco
+        System.out.println("Moeda " + moeda.getNome() + " cadastrada com a cotação de: " + moeda.getCotacao());
+    }
+}
+
+
 }
